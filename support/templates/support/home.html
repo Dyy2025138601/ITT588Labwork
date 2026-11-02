@@ -1,0 +1,22 @@
+{% extends 'support/base.html' %}
+{% block content %}
+<div class="p-5 mb-4 bg-danger-subtle rounded-3">
+  <h1 class="display-5 fw-bold">You are not alone.</h1>
+  <p class="lead">Information and emergency support for victims of domestic violence and gender-based violence in Malaysia.</p>
+  <a href="{% url 'hotline' %}" class="btn btn-danger btn-lg">Get Help Now</a>
+  <a href="{% url 'what_is' %}" class="btn btn-outline-dark btn-lg">Learn More</a>
+</div>
+
+<h2 class="h4">Urgent contacts</h2>
+<div class="row g-3">
+  {% for h in hotlines %}
+  <div class="col-12 col-md-6">
+    <div class="card border-danger h-100"><div class="card-body">
+      <h5 class="card-title">{{ h.name }}</h5>
+      <p class="display-6 text-danger">{{ h.number }}</p>
+      <p class="card-text">{{ h.note }}</p>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

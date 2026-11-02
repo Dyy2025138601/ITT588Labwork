@@ -1,0 +1,14 @@
+{% extends 'support/base.html' %}
+{% block title %}Law Enforcement | Safe Space MY{% endblock %}
+{% block content %}
+<h1>Law Enforcement Framework</h1>
+<p>Malaysian laws that protect victims:</p>
+<div class="list-group">
+  {% for law in laws %}
+  <div class="list-group-item">
+    <h5 class="mb-1">{{ law.name }}</h5>
+    <p class="mb-0">{{ law.desc }}</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

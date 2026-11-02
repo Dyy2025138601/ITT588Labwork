@@ -1,0 +1,28 @@
+{% extends 'support/base.html' %}
+{% block title %}Contact | Safe Space MY{% endblock %}
+{% block content %}
+<h1>Contact Us</h1>
+{% if sent %}
+  <div class="alert alert-success">Thank you. Your message has been received.</div>
+{% endif %}
+<div class="row">
+  <div class="col-md-6">
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3"><label class="form-label">Name (optional)</label>
+        <input type="text" name="name" class="form-control"></div>
+      <div class="mb-3"><label class="form-label">Message</label>
+        <textarea name="message" rows="4" class="form-control" required></textarea></div>
+      <button class="btn btn-danger">Send</button>
+    </form>
+  </div>
+  <div class="col-md-6 mt-4 mt-md-0">
+    <h5>Other channels</h5>
+    <ul>
+      <li>Email: help@safespace.example</li>
+      <li>WhatsApp (Talian Kasih): 019-261 5999</li>
+      <li>This form is not monitored in emergencies. Call <strong>999</strong>.</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

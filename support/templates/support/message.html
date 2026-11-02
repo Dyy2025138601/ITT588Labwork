@@ -1,0 +1,182 @@
+{% extends 'support/base.html' %}
+{% block title %}Message | Safe Space MY{% endblock %}
+{% block content %}
+<h1>Message</h1>
+<p>Send us a message.</p>
+
+<style>
+  dialog { background:#0f0f12; color:#eee; border:1px solid #e0122b; border-radius:.7rem; max-width:440px; width:90%; }
+  dialog::backdrop { background:rgba(0,0,0,.75); }
+
+  .form-select {
+    background-color: #fff1f2;
+    border: 2px solid #3a050c;
+    color: #2b0a0f;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%232b0a0f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  }
+  .form-select:focus {
+    background-color: #ffffff;
+    color: #2b0a0f;
+    border-color: #ff2a3d;
+    box-shadow: 0 0 14px rgba(255, 42, 61, 0.8);}
+</style>
+
+{% verbatim %}
+<div id="app">
+
+    <p class="fw-bold">{{ greeting }}! Malaysia time: {{ clock }}</p>
+
+  <!-- HTML FORM -->
+  <form class="row" @submit.prevent="validate" novalidate>
+    <div class="col-md-7">
+      <label class="form-label">Name</label>
+      <input class="form-control mb-2" v-model="form.name">
+
+      <label class="form-label">Email</label>
+      <input class="form-control mb-2" v-model="form.email" type="email">
+
+      <label class="form-label">How urgent is it?</label>
+      <select class="form-select mb-2" v-model="form.urgency">
+        <option value="low">Just need information</option>
+        <option value="medium">I need to talk to someone</option>
+        <option value="high">I am in danger</option>
+      </select>
+
+      <label class="form-label">Message</label>
+      <textarea class="form-control" rows="4" v-model="form.message"></textarea>
+      <small class="d-block" :class="left < 0 ? 'text-danger' : 'text-secondary'">{{ left }} characters left</small>
+
+      <ul v-if="errors.length" class="text-danger mt-2 mb-0">
+        <li v-for="e in errors" :key="e">{{ e }}</li>
+      </ul>
+
+      <button class="btn btn-danger mt-3" :disabled="sending">{{ sending ? 'Sending...' : 'Send' }}</button>
+      <button type="button" class="btn btn-outline-dark mt-3 ms-2" v-if="sent" @click="openReceipt">Open receipt</button>
+
+      <!-- OUTPUT 1: innerHTML writes into this div -->
+      <div ref="out" classS="mt-3"></div>
+    </div>
+  </form>
+
+  <!-- POPUP DIALOG -->
+  <dialog ref="dlg">
+    <h5>Send this message?</h5>
+    <p class="mb-1"><strong>{{ form.name }}</strong> ({{ form.email }})</p>
+    <p class="small">Urgency: {{ form.urgency }}.</p>
+    <div class="text-end">
+      <button type="button" class="btn btn-outline-light me-2" @click="$refs.dlg.close()">Cancel</button>
+      <button type="button" class="btn btn-danger" @click="confirmSend">Yes, send</button>
+    </div>
+  </dialog>
+
+</div>
+{% endverbatim %}
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.38/dist/vue.global.prod.js"></script>
+<script>
+  // Escape user text so it is safe to put inside HTML (prevents XSS)
+  const esc = s => s.replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
+
+  Vue.createApp({
+    data() {
+      return {
+        now: new Date(),
+        sending: false,
+        form: { name: '', email: '', urgency: 'low', message: '' },
+        errors: [],
+        sent: false
+      };
+    },
+    computed: {
+      left() { return 500 - this.form.message.length; },   // OPERATOR: arithmetic (-)
+
+      clock() {
+        return this.now.toLocaleString('en-MY', {
+          timeZone: 'Asia/Kuala_Lumpur', dateStyle: 'medium', timeStyle: 'medium'
+        });
+      },
+
+      greeting() {
+        const h = this.now.getHours();
+        if (h < 12) return 'Good morning';
+        else if (h < 18) return 'Good afternoon';
+        return 'Good evening';
+      }
+    },
+    mounted() {
+      // DATE AND TIME: update the clock every 1 second
+      setInterval(() => { this.now = new Date(); }, 1000);
+
+      // EVENT LOOP demo: look at the order in the Console (F12)
+      console.log('1. script start');
+      setTimeout(() => console.log('4. setTimeout (macrotask, runs last)'), 0);
+      Promise.resolve().then(() => console.log('3. promise (microtask)'));
+      console.log('2. script end');
+    },
+    methods: {
+      validate() {
+        this.errors = [];
+        const f = this.form;
+        if (f.name.trim().length < 2) this.errors.push('Enter your name (at least 2 characters).');
+        if (!/^\S+@\S+\.\S+$/.test(f.email)) this.errors.push('Enter a valid email, like name@example.com.');
+        if (f.message.trim().length < 10 || f.message.length > 500) this.errors.push('Write a message of 10 to 500 characters.');
+        if (this.errors.length === 0) this.$refs.dlg.showModal();
+      },
+
+    confirmSend() {
+      this.$refs.dlg.close();
+      this.sending = true;
+
+      setTimeout(() => {
+        const f = this.form;
+        const time = new Date().toLocaleTimeString('en-MY');
+
+        let advice;
+          switch (f.urgency) {
+          case 'high':
+            advice = 'URGENT: if you are in danger, call 999 now.';
+            break;
+          case 'medium':
+            advice = 'We suggest calling Talian Kasih 15999.';
+          break;
+          default:
+            advice = 'Thank you. A support organisation can follow up.';
+        }
+
+        this.$refs.out.innerHTML =
+          '<div class="alert alert-success mb-0"><b>' + esc(f.name) +
+          '</b>, your message was received at ' + time + '.<br>' + advice + '</div>';
+
+        console.log('--- Form submitted at ' + time + ' ---');
+        for (const key in f) {
+          console.log(key + ': ' + f[key]);
+        }
+        console.table(f);
+
+        window.alert('Message sent. ' + advice);
+
+        this.sent = true;
+        this.sending = false;
+        }, 1500);
+      },
+
+      // OUTPUT 4: document.write() in a NEW tab
+      openReceipt() {
+        const f = this.form;
+        const w = window.open('', '_blank');
+        if (!w) { window.alert('Please allow pop-ups to see the receipt.'); return; }
+        w.document.write(
+          '<title>Receipt</title><body style="font-family:sans-serif;padding:2rem">' +
+          '<h2>Message receipt</h2>' +
+          '<p>Name: ' + esc(f.name) + '</p>' +
+          '<p>Email: ' + esc(f.email) + '</p>' +
+          '<p>Urgency: ' + esc(f.urgency) + '</p>' +
+          '<p>Message: ' + esc(f.message) + '</p>' +
+          '<p>Printed: ' + new Date().toString() + '</p></body>'
+        );
+        w.document.close();
+      }
+    }
+  }).mount('#app');
+</script>
+{% endblock %}

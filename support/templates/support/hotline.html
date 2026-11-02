@@ -1,0 +1,16 @@
+{% extends 'support/base.html' %}
+{% block title %}Hotline | Safe Space MY{% endblock %}
+{% block content %}
+<h1>Emergency Directory and Hotlines</h1>
+<div class="row g-3">
+  {% for h in hotlines %}
+  <div class="col-12 col-md-6 col-lg-3">
+    <div class="card text-center h-100"><div class="card-body">
+      <h6>{{ h.name }}</h6>
+      <a class="btn btn-danger btn-lg my-2" href="tel:{{ h.number|cut:' '|cut:'-' }}">{{ h.number }}</a>
+      <p class="small mb-0">{{ h.note }}</p>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

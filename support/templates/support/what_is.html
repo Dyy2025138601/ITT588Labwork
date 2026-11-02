@@ -1,0 +1,28 @@
+{% extends 'support/base.html' %}
+{% block title %}What Is | Safe Space MY{% endblock %}
+{% block content %}
+<h1>What Is Domestic Violence and GBV?</h1>
+<p><strong>Domestic violence</strong> is abuse by a family member or intimate partner to control or harm another person.
+<strong>Gender-Based Violence (GBV)</strong> is harm directed at a person because of their gender.</p>
+
+<div class="accordion mt-4" id="types">
+  <div class="accordion-item">
+    <h2 class="accordion-header"><button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#a1">Physical abuse</button></h2>
+    <div id="a1" class="accordion-collapse collapse show"><div class="accordion-body">Hitting, slapping, choking, pushing, or any act that causes bodily harm.</div></div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a2">Emotional / psychological abuse</button></h2>
+    <div id="a2" class="accordion-collapse collapse"><div class="accordion-body">Insults, threats, humiliation, isolation, and controlling behaviour.</div></div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a3">Sexual abuse</button></h2>
+    <div id="a3" class="accordion-collapse collapse"><div class="accordion-body">Any sexual act without consent, including within marriage.</div></div>
+  </div>
+  <div class="accordion-item">
+    <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a4">Economic abuse</button></h2>
+    <div id="a4" class="accordion-collapse collapse"><div class="accordion-body">Controlling money, preventing work, or withholding financial support.</div></div>
+  </div>
+</div>
+
+<div class="alert alert-warning mt-4">Abuse is never the victim's fault. Help is available.</div>
+{% endblock %}
